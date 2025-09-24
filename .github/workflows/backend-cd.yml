@@ -45,5 +45,5 @@ jobs:
           context: .
           push: true
           # The tag is dynamically set based on the branch
-          tags: ghcr.io/${{ github.actor }}/your-flask-app:${{ steps.vars.outputs.tag }}
+          tags: ghcr.io/${{ steps.vars.outputs.owner }}/your-flask-app:${{ steps.vars.outputs.tag }}
 
