@@ -24,8 +24,11 @@ jobs:
       - name: Determine Docker image tag
         id: vars
         run: |
-          # If the branch is 'main', use the 'latest' tag.
-          # Otherwise (for 'staging'), use the branch name as the tag.
+         # --- THIS IS THE FIX ---
+          # 1. Convert the GitHub username to lowercase for the image owner.
+          echo "owner=$(echo ${{ github.actor }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+
+          # 2. Determine the tag based on the branch name.
           if [ "${{ github.ref }}" = "refs/heads/main" ]; then
             echo "tag=latest" >> $GITHUB_OUTPUT
           else
