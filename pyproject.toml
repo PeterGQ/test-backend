@@ -25,7 +25,7 @@ dependencies = [
 ]
 
 [tool.poetry]
-packages = [{include = "app", from = "app.*"}]
+packages = [{include = "app"}]
 
 
 [build-system]
