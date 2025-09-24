@@ -3,7 +3,7 @@ name: Backend CI
 # This workflow runs on every pull request that targets the 'main' branch.
 # It ensures that code is tested and linted before it can be merged.
 on:
-  pull_request:
+  push:
     branches:
       - main
       - staging
