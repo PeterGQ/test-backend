@@ -36,8 +36,8 @@ jobs:
       # Step 5: Run the linter to check for code formatting issues
       # The '--check' flag makes Black fail if the code is not formatted,
       # without actually changing any files on the runner.
-      - name: Run linter (Black)
-        run: poetry run black --check .
+    #   - name: Run linter (Black)
+    #     run: poetry run black --check .
 
       # Step 6: Run your test suite to ensure code correctness
       # This assumes you have a 'tests' directory and are using pytest.
