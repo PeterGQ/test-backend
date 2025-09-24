@@ -1,0 +1,67 @@
+name: Backend CI
+
+# This workflow runs on every pull request that targets the 'main' branch.
+# It ensures that code is tested and linted before it can be merged.
+on:
+  pull_request:
+    branches:
+      - main
+      - staging
+
+jobs:
+  validate:
+    # Use the latest version of Ubuntu for the runner
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Check out the repository code so the workflow can access it
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Set up the specific Python version your project uses
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11' # Or your project's specific Python version
+
+      # Step 3: Install Poetry, your project's dependency manager
+      # This action is the officially recommended way to install Poetry in GitHub Actions
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+
+      # Step 4: Install all project dependencies using the poetry.lock file for consistency
+      - name: Install dependencies
+        run: poetry install
+
+      # Step 5: Run the linter to check for code formatting issues
+      # The '--check' flag makes Black fail if the code is not formatted,
+      # without actually changing any files on the runner.
+      - name: Run linter (Black)
+        run: poetry run black --check .
+
+      # Step 6: Run your test suite to ensure code correctness
+      # This assumes you have a 'tests' directory and are using pytest.
+      # The command will automatically discover and run all your tests.
+      - name: Run tests (Pytest)
+        run: poetry run pytest
+
+
+    #     # Step 7: Check for security vulnerabilities in your dependencies
+    #   - name: Check for security vulnerabilities (Safety)
+    #     run: poetry run safety check --full-report
+
+    #     # Step 8: Check for common issues and enforce best practices in your code
+    #   - name: Check for common issues (Flake8)
+    #     run: poetry run flake8 .
+
+    #     # Step 9: Check for type errors in your codebase
+    #   - name: Check for type errors (Mypy)
+    #     run: poetry run mypy .
+
+    #     # Step 10: Check for outdated dependencies
+    #   - name: Check for outdated dependencies (Poetry)
+    #     run: poetry show --outdated
+
+# This workflow handles building, pushing, and deploying your Dockerized Flask backend application.
+# It runs on pushes to the 'main' and 'staging' branches, as well as on manual triggers.
+# The workflow consists of two main jobs: 'build-and-push' and 'deploy'.

@@ -1,0 +1,104 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: flask_backend
+    restart: always
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app # Your app code
+    environment:
+      - FLASK_APP=run.py
+      - FLASK_ENV=development
+      - DATABASE_URL=postgresql://myuser:mypassword@db:5432/mytemplate_db
+    depends_on:
+      - db
+    networks:
+      - monitoring_net
+    dns:
+      - 8.8.8.8
+
+  db:
+    image: postgres:15-alpine
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: mytemplate_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - monitoring_net
+
+  # prometheus:
+  #   image: prom/prometheus:latest
+  #   container_name: prometheus_monitor
+  #   restart: always
+  #   ports:
+  #     - "9090:9090"
+  #   volumes:
+  #     - ${COMPOSE_PROMETHEUS_CONFIG}:/etc/prometheus/prometheus.yml
+  #   command: --config.file=/etc/prometheus/prometheus.yml
+  #   depends_on:
+  #     - web # Ensures Flask is up before Prometheus tries to scrape it
+  #   networks:
+  #     - monitoring_net
+
+  # loki:
+  #   image: grafana/loki:latest
+  #   container_name: loki_logger
+  #   restart: always
+  #   ports:
+  #     - "3100:3100"
+  #   volumes:
+  #     - ./monitoring/loki/loki-config.yml:/etc/loki/local-config.yaml
+  #   command: -config.file=/etc/loki/local-config.yaml
+  #   networks:
+  #     - monitoring_net
+
+  # # ✅ ADDED: Promtail is the agent that ships logs from your app to Loki
+  # promtail:
+  #   image: grafana/promtail:latest
+  #   container_name: promtail_agent
+  #   restart: always
+  #   volumes:
+  #     - ./app.log:/logs/app.log # Mounts the log file to be read
+  #     - ./monitoring/promtail/promtail-config.yml:/etc/promtail/config.yml
+  #   command: -config.file=/etc/promtail/config.yml
+  #   depends_on:
+  #     - loki
+  #   networks:
+  #     - monitoring_net
+
+  # grafana:
+  #     image: grafana/grafana:latest
+  #     container_name: grafana_dashboard
+  #     restart: always
+  #     ports:
+  #       - "3000:3000"
+  #     environment:
+  #       - GF_SECURITY_ADMIN_PASSWORD=admin
+  #     volumes:
+  #       # This line saves your dashboards and settings
+  #       - grafana_data:/var/lib/grafana
+  #       # Keep this line for auto-configuring datasources
+  #       - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+  #     depends_on:
+  #       - prometheus
+  #       - loki
+  #     networks:
+  #       - monitoring_net
+
+volumes:
+  postgres_data:
+  # grafana_data:
+
+# Define the shared network
+networks:
+  monitoring_net:
+    driver: bridge

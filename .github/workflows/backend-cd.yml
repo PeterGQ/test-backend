@@ -1,0 +1,49 @@
+name: Backend CD
+
+on:
+  # Trigger the 'build-and-push' job on pushes to the main branch
+  push:
+    branches:
+      - main
+      - staging
+  # Allow the 'deploy' job to be triggered manually
+  workflow_dispatch:
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    # Grant permissions for the GITHUB_TOKEN to write to the container registry
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Determine Docker image tag
+        id: vars
+        run: |
+          # If the branch is 'main', use the 'latest' tag.
+          # Otherwise (for 'staging'), use the branch name as the tag.
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            echo "tag=latest" >> $GITHUB_OUTPUT
+          else
+            echo "tag=staging" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          # The tag is dynamically set based on the branch
+          tags: ghcr.io/${{ github.actor }}/your-flask-app:${{ steps.vars.outputs.tag }}
+

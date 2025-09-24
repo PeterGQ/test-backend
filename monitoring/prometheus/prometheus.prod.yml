@@ -1,0 +1,4 @@
+scrape_configs:
+  - job_name: 'flask-backend-prod'
+    static_configs:
+      - targets: ['prod-api-1.your-domain.com:80', 'prod-api-2.your-domain.com:80']
