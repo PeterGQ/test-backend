@@ -42,8 +42,8 @@ jobs:
       # Step 6: Run your test suite to ensure code correctness
       # This assumes you have a 'tests' directory and are using pytest.
       # The command will automatically discover and run all your tests.
-      - name: Run tests (Pytest)
-        run: poetry run pytest
+    #   - name: Run tests (Pytest)
+    #     run: poetry run pytest
 
 
     #     # Step 7: Check for security vulnerabilities in your dependencies

@@ -25,7 +25,7 @@ dependencies = [
 ]
 
 [tool.poetry]
-packages = [{include = "test_backend", from = "src"}]
+packages = [{include = "app", from = "app.*"}]
 
 
 [build-system]
