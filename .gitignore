@@ -3,7 +3,7 @@
 # Git files
 .git
 .env
-.poetry/
+.poetry/ 
 
 # Docker files
 .dockerignore
